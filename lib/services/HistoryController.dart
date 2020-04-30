@@ -9,6 +9,7 @@ List<History> history = List();
   }
 
   void addHistory(place, destination, source, img){
+    print('went in');
     history.add(History(place: place, destination: destination, source: source, img: img));
   }
   

@@ -22,6 +22,7 @@ class NewScreen extends StatelessWidget {
   }
 
   NewScreen.open(title){
+    
     this.appBarTitle = title;
   }
   
@@ -96,14 +97,14 @@ class NewScreenPageState extends State<NewScreenPage> {
 
 showAlertDialog(BuildContext context, index) {
 
-  Widget okButton = FlatButton(
+    Widget _okButton = FlatButton(
       child: Text("CANCEL"),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
       },
   );
 
-      Widget delButton = FlatButton(
+      Widget _delButton = FlatButton(
       child: Text("DELETE", style: TextStyle(color: Colors.red),),
       onPressed: () {
         setState(() {
@@ -111,7 +112,7 @@ showAlertDialog(BuildContext context, index) {
             final snackBar = SnackBar(
             content: Text('Succesfully Deleted!'),
             action: SnackBarAction(
-              label: 'Undo',
+              label: 'Close',
               onPressed: () {
                 
               },
@@ -127,8 +128,8 @@ showAlertDialog(BuildContext context, index) {
     title: Text(searched.elementAt(index).place),
     content: Text("${searched.elementAt(index).destination}", textAlign: TextAlign.center,),
     actions: [
-      okButton,
-      delButton
+      _okButton,
+      _delButton
     ],
   );
 

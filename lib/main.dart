@@ -39,7 +39,7 @@ String source;
 String place;
 String img;
 
- Completer<GoogleMapController> _controller = Completer();
+Completer<GoogleMapController> _controller = Completer();
 
   @override
   Widget build(BuildContext context) {
@@ -138,9 +138,7 @@ String img;
         onPressed: (){
           debugPrint("pressed");
           source = "10.673883 : 122.975485";
-          Navigator.push(context, MaterialPageRoute(builder: (context){
-            return NewScreen('History', destination, source, place, img);
-          }));
+          showAlertDialog(context);
         },
         tooltip: 'Add Destination',
         child: Icon(Icons.add),
@@ -195,7 +193,7 @@ Widget _boxes(String _image, double lat,double long,String restaurantName) {
                           Container(
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: myDetailsContainer1(restaurantName),
+                            child: detailsContainer(restaurantName),
                           ),
                         ),
 
@@ -243,7 +241,7 @@ Widget _meBox(String _image, double lat,double long,String me) {
 
 
 
- Widget myDetailsContainer1(String restaurantName) {
+ Widget detailsContainer(String restaurantName) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
@@ -313,26 +311,44 @@ Widget _meBox(String _image, double lat,double long,String me) {
       ],
     );
   } 
-Widget myDetails(String me) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Container(
-              child: Text(me,
-            style: TextStyle(
-                color: Color(0xff6200ee),
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold),
-          )),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 200.0),
-        ),
-      ],
+
+  showAlertDialog(BuildContext context) {
+
+    Widget _okButton = FlatButton(
+      child: Text("CANCEL"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+  );
+
+      Widget _continueButton = FlatButton(
+      child: Text("CONTINUE", style: TextStyle(color: Colors.green),),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        Navigator.push(context, MaterialPageRoute(builder: (context){
+          return NewScreen('History', destination, source, place, img);
+        }));
+      },
     );
-  } 
+
+  AlertDialog alert = AlertDialog(
+    title: Text(""),
+    content: Text("Go to Location?", textAlign: TextAlign.center,),
+    actions: [
+      _okButton,
+      _continueButton
+    ],
+  );
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+
 }
 
 Marker riversideMarker = Marker(
