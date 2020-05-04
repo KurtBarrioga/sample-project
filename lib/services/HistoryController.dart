@@ -1,19 +1,20 @@
-import 'package:sampleproject/services/History.dart';
+import 'package:sampleproject/server/AppServer.dart';
 
-class HistoryController{
-  
-List<History> history = List();
-  
-  List<History> getHistory(){
-    return history;
+class HistoryController {
+  AppServer server = AppServer();
+
+  void insertHistory(destination, source, place, img) async {
+    await server.serverConnect();
+    server.insertHistory(destination, source, place, img);
   }
 
-  void addHistory(place, destination, source, img){
-    print('went in');
-    history.add(History(place: place, destination: destination, source: source, img: img));
+  getHistoryList() async {
+    await server.serverConnect();
+    return await server.getHistory();
   }
-  
-  void deleteHistory(index){
-    history.removeAt(index);
+
+  void deleteHistory(id) async {
+    await server.serverConnect();
+    server.deleteHistory(id);
   }
 }
