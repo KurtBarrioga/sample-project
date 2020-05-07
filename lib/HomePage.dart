@@ -1,9 +1,26 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:sampleproject/ProfilePage.dart';
 import 'package:sampleproject/services/HistoryController.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 
-// List<History> history = List();
+// void main() {
+//   testWidgets('NewScreen has title History', (WidgetTester tester) async {
 
-List searched = List();
+//     // Create the Finders.
+//     final titleFinder = find.text('History');
+
+//     await tester.runAsync(() async {
+//     await tester.pumpWidget(NewScreen('History'));
+
+//     expect(titleFinder, findsOneWidget);
+//     });
+
+//   });
+// }
+
 List results = List();
 
 HistoryController historyController = new HistoryController();
@@ -17,7 +34,10 @@ class NewScreen extends StatelessWidget {
   }
 
   initHistory() async {
-    results = await historyController.getHistoryList();
+    //results = await historyController.getHistoryList();
+    var response = await http.get("http://10.0.2.2:3000/getHistory");
+    var body = jsonDecode(response.body);
+    results = body;
   }
 
   @override
@@ -25,7 +45,7 @@ class NewScreen extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.red,
       ),
       home: NewScreenPage(title: this.appBarTitle),
     );
@@ -41,9 +61,7 @@ class NewScreenPage extends StatefulWidget {
   final String title;
 
   @override
-  State<StatefulWidget> createState() {
-    return NewScreenPageState();
-  }
+  State<StatefulWidget> createState() => NewScreenPageState();
 }
 
 class NewScreenPageState extends State<NewScreenPage> {
@@ -93,22 +111,27 @@ class NewScreenPageState extends State<NewScreenPage> {
         style: TextStyle(color: Colors.red),
       ),
       onPressed: () async {
-        await historyController.deleteHistory(results.elementAt(index)[0]);
-        await NewScreen('');
-        Future.delayed(const Duration(milliseconds: 500), () {
-          setState(() {
-            final snackBar = SnackBar(
-              content: Text('Succesfully Deleted!'),
-              action: SnackBarAction(
-                label: 'Close',
-                onPressed: () {},
-              ),
-            );
-            Scaffold.of(context).showSnackBar(snackBar);
+        //await historyController.deleteHistory(results.elementAt(index)[0]);
+        var response = await http.delete(
+            "http://10.0.2.2:3000/deleteHistory/${results.elementAt(index)[0]}");
+        if (response.statusCode == 200) {
+          NewScreen('');
+          ProfilePage();
+          Future.delayed(const Duration(milliseconds: 500), () {
+            setState(() {
+              final snackBar = SnackBar(
+                content: Text('Succesfully Deleted!'),
+                action: SnackBarAction(
+                  label: 'Close',
+                  onPressed: () {},
+                ),
+              );
+              Scaffold.of(context).showSnackBar(snackBar);
 
-            Navigator.of(context, rootNavigator: true).pop();
+              Navigator.of(context, rootNavigator: true).pop();
+            });
           });
-        });
+        }
       },
     );
 

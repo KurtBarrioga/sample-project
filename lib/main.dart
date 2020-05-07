@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sampleproject/HomePage.dart';
+import 'package:sampleproject/ProfilePage.dart';
 import 'package:sampleproject/services/Constants.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:http/http.dart' as http;
 
 void main() => runApp(MyApp());
 
@@ -16,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.red,
       ),
       home: HomePage(title: 'Uber for Hospitals'),
     );
@@ -44,6 +47,7 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.red,
         centerTitle: true,
         title: Text(widget.title),
         actions: <Widget>[
@@ -82,10 +86,6 @@ class HomePageState extends State<HomePage> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: <Widget>[
-                  SizedBox(
-                    width: 10.0,
-                    height: 10,
-                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: _boxes(
@@ -94,7 +94,6 @@ class HomePageState extends State<HomePage> {
                         122.958096,
                         "Riverside Medical Center"),
                   ),
-                  SizedBox(width: 10.0),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: _boxes(
@@ -103,7 +102,6 @@ class HomePageState extends State<HomePage> {
                         122.951010,
                         "Corazon Locsin Reg. Hospital"),
                   ),
-                  SizedBox(width: 10.0),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: _boxes(
@@ -134,6 +132,7 @@ class HomePageState extends State<HomePage> {
         ]),
       )),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.red,
         onPressed: () {
           source = "10.673883 : 122.975485";
           showAlertDialog(context);
@@ -149,6 +148,10 @@ class HomePageState extends State<HomePage> {
     if (choice == "History") {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
         return NewScreen('History');
+      }));
+    } else if (choice == "Profile") {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return ProfilePage();
       }));
     } else if (choice == "Exit") {
       SystemNavigator.pop();
@@ -248,7 +251,7 @@ class HomePageState extends State<HomePage> {
               child: Text(
             hospitalName,
             style: TextStyle(
-                color: Color(0xff6200ee),
+                color: Colors.indigoAccent,
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold),
           )),
@@ -319,20 +322,35 @@ class HomePageState extends State<HomePage> {
     );
 
     Widget _continueButton = FlatButton(
-      child: Text(
-        "CONTINUE",
-        style: TextStyle(color: Colors.green),
-      ),
-      onPressed: () async {
-        await historyController.insertHistory(destination, source, place, img);
-        NewScreen('');
-        Navigator.of(context, rootNavigator: true).pop();
-        Flushbar(
-          message: "Added Successfully",
-          duration: Duration(seconds: 3),
-        )..show(context);
-      },
-    );
+        child: Text(
+          "CONTINUE",
+          style: TextStyle(color: Colors.green),
+        ),
+        onPressed: () async {
+          // await historyController.insertHistory(destination, source, place, img);
+          // NewScreen('');
+          // ProfilePage();
+          // Navigator.of(context, rootNavigator: true).pop();
+          // Flushbar(
+          //   message: "Added Successfully",
+          //   duration: Duration(seconds: 3),
+          // )..show(context);
+
+          String url = 'http://10.0.2.2:3000/addHistory';
+          Map<String, String> headers = {"Content-type": "application/json"};
+          var json =
+              '{"destination": "$destination", "source":"$source","place":"$place", "img":"$img"}';
+          var response = await http.post(url, headers: headers, body: json);
+          if (response.statusCode == 200) {
+            NewScreen('');
+            ProfilePage();
+            Navigator.of(context, rootNavigator: true).pop();
+            Flushbar(
+              message: "Added Successfully",
+              duration: Duration(seconds: 3),
+            )..show(context);
+          }
+        });
 
     AlertDialog alert = AlertDialog(
       title: Text(""),

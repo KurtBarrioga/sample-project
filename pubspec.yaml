@@ -21,6 +21,11 @@ dependencies:
     sdk: flutter
   postgres: ^2.1.1
   flushbar: 1.6.0
+  dio: ^3.0.7
+  angel_framework: ^2.1.1
+  angel_hot: ^2.0.6
+  http: 0.12.1
+  test: 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
